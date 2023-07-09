@@ -21,10 +21,15 @@ class JsonDatabase {
 */
 
   public async insert(storage: string, newData: any) {
-    let allData = await db.getData(storage) || []
+    let allData = await db.getData(storage)
+    if (!Array.isArray(allData)) {
+      allData = new Array()
+    }
     allData.push(newData)
+    let savedObject = { id: allData.indexOf(newData), ...newData }
     await db.push(storage, allData)
     db.save()
+    return savedObject
   }
 
   public async select(storage: string) {
