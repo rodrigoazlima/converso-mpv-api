@@ -1,0 +1,3 @@
+{
+  "initialTips": "I want you to read all the information below and them do a task, all of the information is a implicit context for you to research.\nInformation:\n[FROM_INFO]&\n\n[TO_INFO]\n\nTask:\nBe creative and create a list of 10 first message, each under 200 characters, to the fantasy girl.\nAfter that I want you to think as the fantasy girl and rate each phrase."
+}

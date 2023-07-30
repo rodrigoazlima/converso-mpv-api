@@ -1,43 +1,42 @@
+import { randomUUID } from "crypto"
 import { JsonDB, Config } from "node-json-db"
 
 const db = new JsonDB(new Config("db/local", true, false, "/", true))
 
 class JsonDatabase {
-  /*
-  public async select(data, filter, pagination) {
-    interface FooBar {
-      Hello: string
-      World: number
+  public async save(storage: string, newData: any) {
+    let allData = []
+    try {
+      allData = await db.getData(storage)
+    } catch (error) {
+      await db.push(storage, [])
+      console.error("JsonDatabase::save::Inicialized::", storage)
     }
-    const object = { Hello: "World", World: 5 } as FooBar
-
-    await db.push("/test", object)
-
-    //Will be typed as FooBar in your IDE
-    const result = await db.getObject<FooBar>("/test")
-
-    return result
-  }
-*/
-
-  public async insert(storage: string, newData: any) {
-    let allData = await db.getData(storage)
     if (!Array.isArray(allData)) {
       allData = new Array()
     }
-    allData.push(newData)
-    let savedObject = { id: allData.indexOf(newData), ...newData }
+    if (!newData.hash)
+      newData.hash = `${randomUUID()}`.replace(/-./g, "") || newData.hash
+    if (!allData.find((data) => data.hash === newData.hash)) {
+      newData.id = allData.length
+      allData.push(newData)
+    } else {
+      let index = allData.indexOf((data: any) => data.hash === newData.hash)
+      newData.id = index
+      allData[index] = newData
+    }
     await db.push(storage, allData)
     db.save()
-    return savedObject
+    return newData
   }
 
   public async select(storage: string) {
-    let result = undefined
+    let result = []
     try {
       result = await db.getData(storage)
     } catch (error) {
-      console.error(error)
+      await db.push(storage, [])
+      console.error("JsonDatabase::save::Inicialized::", storage)
     }
     return result
   }
